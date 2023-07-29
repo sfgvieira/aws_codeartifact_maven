@@ -3,12 +3,12 @@ package net.coderazzi.aws_codeartifact_maven;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.*;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.TitledSeparator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.uiDesigner.core.AbstractLayout;
-import com.intellij.util.SVGLoader;
 import com.intellij.util.ui.GridBag;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
@@ -19,7 +19,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,12 +36,12 @@ class InputDialog extends DialogWrapper {
 
     private final JTextField domain = new JTextField(32);
     private final JTextField domainOwner = new JTextField(32);
-    private final DefaultComboBoxModel regionsModel = new DefaultComboBoxModel();
-    private final ComboBoxWithWidePopup region = new ComboBoxWithWidePopup(regionsModel);
-    private final DefaultComboBoxModel serverIdsModel = new DefaultComboBoxModel();
-    private final ComboBoxWithWidePopup mavenServerId = new ComboBoxWithWidePopup(serverIdsModel);
-    private final DefaultComboBoxModel awsProfileModel = new DefaultComboBoxModel();
-    private final ComboBoxWithWidePopup awsProfile = new ComboBoxWithWidePopup(awsProfileModel);
+    private final DefaultComboBoxModel<String> regionsModel = new DefaultComboBoxModel<>();
+    private final ComboBoxWithWidePopup<String> region = new ComboBoxWithWidePopup<>(regionsModel);
+    private final DefaultComboBoxModel<Object> serverIdsModel = new DefaultComboBoxModel<>();
+    private final ComboBoxWithWidePopup<Object> mavenServerId = new ComboBoxWithWidePopup<>(serverIdsModel);
+    private final DefaultComboBoxModel<Object> awsProfileModel = new DefaultComboBoxModel<>();
+    private final ComboBoxWithWidePopup<Object> awsProfile = new ComboBoxWithWidePopup<>(awsProfileModel);
     private final JTextField settingsFile = new JTextField(32);
     private final JTextField awsPath = new JTextField(32);
     private Thread loadingServersThread, loadingProfilesThread;
@@ -332,13 +331,8 @@ class InputDialog extends DialogWrapper {
     private JComponent getIconPanel() {
         String resource = ColorUtil.isDark(getOwner().getBackground()) ? DARK_ICON : LIGHT_ICON;
         URL url = getClass().getClassLoader().getResource(resource);
-        if (url != null) {
-            try {
-                return new JLabel(new ImageIcon(SVGLoader.load(url, 3.5f)));
-            } catch (IOException ex) {
-            }
-        }
-        return new JLabel();
+        Icon icon = IconLoader.findIcon(url);
+        return new JLabel(icon);
     }
 
 
@@ -364,13 +358,13 @@ class InputDialog extends DialogWrapper {
         return check.isEnabled() && check.getSelectedItem() != null;
     }
 
-    private String getSelectedRegion(){
+    private String getSelectedRegion() {
         Object ret = region.getSelectedItem();
-        return ret==null? InputDialogState.NO_REGION : ret.toString();
+        return ret == null ? InputDialogState.NO_REGION : ret.toString();
     }
 
-    private void setSelectedRegion(String s){
-        if (s==null || s=="") {
+    private void setSelectedRegion(String s) {
+        if (s == null || s.isEmpty()) {
             region.setSelectedItem(InputDialogState.NO_REGION);
         } else {
             region.setSelectedItem(s);

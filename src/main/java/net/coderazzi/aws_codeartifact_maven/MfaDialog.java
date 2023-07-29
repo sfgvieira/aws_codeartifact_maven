@@ -4,7 +4,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
 class MfaDialog extends DialogWrapper {
@@ -36,20 +36,20 @@ class MfaDialog extends DialogWrapper {
     }
 
 
-    public String getMfaCode(){
+    public String getMfaCode() {
         return mfa.getText();
     }
 
-    public static String getMfaCode(final String request) throws InvocationTargetException{
+    public static String getMfaCode(final String request) throws InvocationTargetException {
         final DialogStatus status = new DialogStatus();
         try {
             SwingUtilities.invokeAndWait(() -> {
                 final MfaDialog dialog = new MfaDialog(request);
-                if (dialog.showAndGet()){
+                if (dialog.showAndGet()) {
                     status.code = dialog.getMfaCode();
                 }
             });
-        } catch (InterruptedException ex){
+        } catch (InterruptedException ex) {
         }
         return status.code;
     }
